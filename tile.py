@@ -12,7 +12,7 @@ def generate_random_tiles(n):
     Resource.WOOD,
     Resource.DESERT,
     ]
-    return [Tile(choice(list(Resource)), choice(possible_nums)) for x in range(n)]
+    return [Tile(choice(possible_tiles), choice(possible_nums)) for x in range(n)]
 
 def generate_board(top_width, middle_width):
     board = []

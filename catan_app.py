@@ -58,7 +58,7 @@ def game_state():
 
 @app.route("/generate/<top_width>/<middle_width>")
 def generate(top_width, middle_width):
-    game.generate(top_width, middle_width)
+    game.generate(int(top_width), int(middle_width))
     return jsonify(serialize_game(game))
 
 

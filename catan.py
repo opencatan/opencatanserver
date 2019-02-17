@@ -102,7 +102,7 @@ class Catan:
                     self.graph.add_node(count, has=[])
                     count += 1
 
-                tile.vertices = [v0, v1, v2, v3, v4, v5] 
+                tile.vertices = [v0, v1, v2, v3, v4, v5]
 
         #connect vertices
         for row in self.tiles:
@@ -111,7 +111,7 @@ class Catan:
                     continue
                 for i, vertex in enumerate(tile.vertices):
                     v2 = tile.vertices[i-1]
-                    self.graph.add_edge(vertex, v2) 
+                    self.graph.add_edge(vertex, v2)
                     #graph.connect(vertex, v2, 1)
 
     def place_settlement(self, vertex, player):
@@ -120,9 +120,10 @@ class Catan:
 
     # This doesnt work yet. testing with test.py
     def place_city(self, vertex, player):
-        print ("checking... " + str(self.graph.nodes[vertex]['has']))
-        if 'settlement' is not in self.graph.nodes[vertex]['has'] or name is not in self.graph.nodes[vertex]['has']:
-            print ('you done fucked up now. you cant build that!')
-        else:
-            attrs = {vertex: {'has': ['city', player]}}
-            nx.set_node_attributes(self.graph, attrs)
+        pass
+        # print ("checking... " + str(self.graph.nodes[vertex]['has']))
+        # if 'settlement' is not in self.graph.nodes[vertex]['has'] or name is not in self.graph.nodes[vertex]['has']:
+        #     print ('you done fucked up now. you cant build that!')
+        # else:
+        #     attrs = {vertex: {'has': ['city', player]}}
+        #     nx.set_node_attributes(self.graph, attrs)

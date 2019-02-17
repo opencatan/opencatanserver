@@ -3,7 +3,7 @@ import sys
 from random import choice
 
 def generate_random_tiles(n):
-    return [choice(list(Resource)) for x in range(n)]
+    return [Tile(choice(list(Resource)), random.randrange(2,12)) for x in range(n)]
 
 def generate_board(top_width, middle_width):
     assert middle_width % 2

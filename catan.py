@@ -19,7 +19,10 @@ class Catan:
         self.bank = {Resource.WHEAT: 20, Resource.ORE: 20, Resource.SHEEP: 20, Resource.BRICK: 20, Resource.WOOD: 20} #todo: custom bank. check these numbers
 
     def make_graph(self):
-        vertex_set = set()
+        #create graph
+        self.graph = nx.Graph()
+
+        count = 0
         #create vertices
         for i, row in enumerate(self.tiles):
             offset = 0 if i % 2 == 1 else -1 #odd rows are inset 1/2
@@ -67,17 +70,33 @@ class Catan:
                     v0 = left.vertices[2]
                     v5 = left.vertices[3]
 
-                tile.vertices = [v if v is not None else Vertex() for v in [v0, v1, v2, v3, v4, v5]]
+                # add new vertices
+                if v0 is None:
+                    v0 = count
+                    self.graph.add_node(count, has=[])
+                    count += 1
+                if v1 is None:
+                    v1 = count
+                    self.graph.add_node(count, has=[])
+                    count += 1
+                if v2 is None:
+                    v2 = count
+                    self.graph.add_node(count, has=[])
+                    count += 1
+                if v3 is None:
+                    v3 = count
+                    self.graph.add_node(count, has=[])
+                    count += 1
+                if v4 is None:
+                    v4 = count
+                    self.graph.add_node(count, has=[])
+                    count += 1
+                if v5 is None:
+                    v5 = count
+                    self.graph.add_node(count, has=[])
+                    count += 1
 
-                #untested (whoops)
-                for vertex in tile.vertices:
-                    vertex_set.add(vertex)
-                    vertex.adjacent_tiles.append(tile) #circular reference (whoops)
-
-        #create graph
-        self.graph = Graph()
-        for vertex in vertex_set:
-            self.graph.insert(vertex)
+                tile.vertices = [v0, v1, v2, v3, v4, v5] 
 
         #connect vertices
         for row in self.tiles:
@@ -86,7 +105,18 @@ class Catan:
                     continue
                 for i, vertex in enumerate(tile.vertices):
                     v2 = tile.vertices[i-1]
-                    self.graph.connect(vertex, v2, 1)
+                    self.graph.add_edge(vertex, v2) 
+                    #graph.connect(vertex, v2, 1)
 
     def place_settlement(self, vertex, player):
-        pass
+        attrs = {vertex: {'has': ['settlement', player]}}
+        nx.set_node_attributes(self.graph, attrs)
+
+    # This doesnt work yet. testing with test.py
+    def place_city(self, vertex, player):
+        print ("checking... " + str(self.graph.nodes[vertex]['has']))
+        if 'settlement' is not in self.graph.nodes[vertex]['has'] or name is not in self.graph.nodes[vertex]['has']:
+            print ('you done fucked up now. you cant build that!')
+        else:
+            attrs = {vertex: {'has': ['city', player]}}
+            nx.set_node_attributes(self.graph, attrs)

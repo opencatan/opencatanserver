@@ -6,34 +6,6 @@ def generate_random_tiles(n):
     return [Tile(choice(list(Resource)), randrange(2,12)) for x in range(n)]
 
 def generate_board(top_width, middle_width):
-    assert middle_width % 2
-    board = []
-    height = (middle_width - top_width) * 2 + 1
-    array_width = height + 1
-    for j in range(height):
-        new_row = []
-        for i in range(middle_width):
-            new_row.append(None)
-        board.append(new_row)
-
-    for n, i in enumerate(range(top_width, middle_width+1)):
-        tiles = generate_random_tiles(i)
-        if not n % 2: # even rows
-            start_pos = (middle_width - (i))//2
-            board[n][start_pos:middle_width-start_pos] = tiles
-        if n % 2:
-            board[n][start_pos-1:middle_width-start_pos] = tiles
-
-    for n, i in enumerate(range(top_width, middle_width)):
-        tiles = generate_random_tiles(i)
-        if not n % 2: # even rows
-            start_pos = (middle_width - (i))//2
-            board[-n-1][start_pos:middle_width-start_pos] = tiles
-        if n % 2:
-            board[-n-1][start_pos-1:middle_width-start_pos] = tiles
-    return board
- 
-def generate_board(top_width, middle_width):
     board = []
     board.append(generate_random_tiles(middle_width))
 
@@ -49,7 +21,7 @@ def generate_board(top_width, middle_width):
     index_tiles_start = 0
     for i in range(middle_width- top_width):
         num_tiles_in_row = middle_width - 1 - i 
-        if row_offset:
+        if not row_offset:
             index_tiles_start += 1
 
         top_row = [None] * index_tiles_start +\
@@ -60,10 +32,13 @@ def generate_board(top_width, middle_width):
                         generate_random_tiles(num_tiles_in_row) + \
                         [None] * index_tiles_start 
 
+        if row_offset:
+            top_row.append(None)
+            bottom_row.append(None)
+
         board.insert(0, top_row)
         board.append(bottom_row)
         row_offset = not row_offset
-    print(board)
     return board
         
 

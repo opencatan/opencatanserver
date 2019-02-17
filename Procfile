@@ -1,1 +1,1 @@
-web: flask run --host=0.0.0.0 --port=80
+web: pipenv run gunicorn --bind 0.0.0.0:5000 catan_app:app

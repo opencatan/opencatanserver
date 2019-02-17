@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 networkx = "*"
 flask = "*"
+gunicorn = "*"
 
 [dev-packages]
 pylint = "*"

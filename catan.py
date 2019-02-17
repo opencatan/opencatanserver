@@ -22,11 +22,13 @@ class Catan:
         vertex_set = set()
         #create vertices
         for i, row in enumerate(self.tiles):
-            offset = 0 if i % 2 == 1 else 0 #odd rows are inset 1/2
+            offset = 0 if i % 2 == 1 else -1 #odd rows are inset 1/2
             for j, tile in enumerate(row):
                 if tile is None:
                     continue
                 v0 = v1 = v2 = v3 = v4 = v5 = None
+
+                # get above left tile
                 try:
                     x, y = i-1, j+offset
                     if x < 0 or y < 0:
@@ -35,6 +37,7 @@ class Catan:
                 except IndexError:
                     above_left = None
 
+                # get above right tile
                 try:
                     x, y = i-1, j+offset+1
                     if x < 0 or y < 0:
@@ -43,6 +46,7 @@ class Catan:
                 except IndexError:
                     above_right = None
 
+                # get left tile
                 try:
                     x, y = i, j-1
                     if x < 0 or y < 0:
@@ -52,6 +56,7 @@ class Catan:
                     left = None
 
                 #get what we can out of each of them, we may have redundancies
+                # get vertices
                 if above_left is not None:
                     v0 = above_left.vertices[4]
                     v1 = above_left.vertices[3]

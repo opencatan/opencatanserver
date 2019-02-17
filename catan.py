@@ -2,7 +2,7 @@ from enum import Enum
 from graph import Vertex, Graph
 import networkx as nx
 from classes import Turn, Settlement, Resource
-from tile import Tile
+from tile import Tile, generate_board
 from player import Player
 import sys
 from robber import Robber
@@ -10,6 +10,7 @@ from robber import Robber
 class Catan:
     def __init__(self, tiles, players):
         self.tiles = tiles #2d array
+        self.tiles = generate_board(3, 5)
         self.make_graph()
 
         self.players = players #list of names

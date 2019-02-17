@@ -1,11 +1,41 @@
 from classes import Resource
 import sys
+from random import choice
 
-def normalize_half_index(index):
-        if int(index) == index: # we are in a normal row
-            return index
-        else:
-            return int(index+0.5) # we're in a wierd row, 0.5 -> 1st element of array, 1.5 -> 2nd element of array, etc...
+def generate_random_tiles(n):
+    return [choice(list(Resource)) for x in range(n)]
+
+def generate_board(top_width, middle_width):
+    assert middle_width % 2
+    board = []
+    height = (middle_width - top_width) * 2 + 1
+    array_width = height + 1
+    for j in range(height):
+        new_row = []
+        for i in range(middle_width):
+            new_row.append(None)
+        board.append(new_row)
+    print(board)
+
+    for n, i in enumerate(range(top_width, middle_width+1)):
+        tiles = generate_random_tiles(i)
+        if not n % 2: # even rows
+            start_pos = (middle_width - (i))//2
+            board[n][start_pos:middle_width-start_pos] = tiles
+        if n % 2:
+            board[n][start_pos-1:middle_width-start_pos] = tiles
+
+    for n, i in enumerate(range(top_width, middle_width)):
+        tiles = generate_random_tiles(i)
+        if not n % 2: # even rows
+            start_pos = (middle_width - (i))//2
+            board[-n-1][start_pos:middle_width-start_pos] = tiles
+        if n % 2:
+            board[-n-1][start_pos-1:middle_width-start_pos] = tiles
+    print(board)
+    return board
+    
+
 
 class TileBoard:
     def __init__(self, board):

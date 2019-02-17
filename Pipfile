@@ -8,6 +8,7 @@ networkx = "*"
 flask = "*"
 gunicorn = "*"
 flask-cors = "*"
+ipython = "*"
 
 [dev-packages]
 pylint = "*"

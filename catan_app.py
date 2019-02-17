@@ -31,8 +31,7 @@ def tiles_to_jsonifiable(tiles):
             if _hex is None:
                 json_row.append(None)
                 continue
-            tile_dict = {}
-            {'resource_type': _hex.resource_type.value,
+            tile_dict = {'resource_type': _hex.resource_type.value,
             'resource_number': _hex.resource_number}
             json_row.append(tile_dict)
         json_tiles.append(json_row)

@@ -9,6 +9,7 @@ flask = "*"
 gunicorn = "*"
 flask-cors = "*"
 ipython = "*"
+pylint = "*"
 
 [dev-packages]
 pylint = "*"

@@ -3,7 +3,7 @@ import sys
 from random import choice, randrange
 
 def generate_random_tiles(n):
-    return [Tile(choice(list(Resource)), randrange(2,12)) for x in range(n)]
+    return [Tile(choice(list(Resource)), 7) for x in range(n)]
 
 def generate_board(top_width, middle_width):
     board = []

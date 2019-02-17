@@ -14,6 +14,8 @@ class Catan:
         self.make_graph()
 
         self.players = players #list of names
+        self.players[0].resources['ore'] = 2
+        self.players[1].resources['wheat'] = 2
         self.robber = Robber(1, 1)
         self.turn = self.players[0]
         self.phase = 0

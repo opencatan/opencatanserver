@@ -4,11 +4,11 @@ class Player:
     def __init__(self, name):
         self.name = name
         self.resources = {
-                    'wheat': 0,
-                    'ore': 0,
-                    'sheep': 0,
-                    'brick': 0,
-                    'wood': 0
+                    'wheat': 1,
+                    'ore': 1,
+                    'sheep': 1,
+                    'brick': 1,
+                    'wood': 1
                     }
         self.development_cards = []
 

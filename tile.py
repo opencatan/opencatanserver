@@ -32,7 +32,40 @@ def generate_board(top_width, middle_width):
         if n % 2:
             board[-n-1][start_pos-1:middle_width-start_pos] = tiles
     return board
-    
+ 
+def generate_board(top_width, middle_width):
+    board = []
+    board.append(generate_random_tiles(middle_width))
+
+    #will the middle row be offset?
+
+    if (top_width-middle_width) % 2 == 0:
+        middle_offset = False
+
+    else:
+        middle_offset = True
+
+    row_offset = not middle_offset
+    index_tiles_start = 0
+    for i in range(middle_width- top_width):
+        num_tiles_in_row = middle_width - 1 - i 
+        if row_offset:
+            index_tiles_start += 1
+
+        top_row = [None] * index_tiles_start +\
+                        generate_random_tiles(num_tiles_in_row) + \
+                        [None] * index_tiles_start 
+
+        bottom_row = [None] * index_tiles_start + \
+                        generate_random_tiles(num_tiles_in_row) + \
+                        [None] * index_tiles_start 
+
+        board.insert(0, top_row)
+        board.append(bottom_row)
+        row_offset = not row_offset
+    print(board)
+    return board
+        
 
 
 class TileBoard:

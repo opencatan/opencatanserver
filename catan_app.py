@@ -7,6 +7,7 @@ from tile import Tile
 from player import Player
 import sys
 from catan import Catan
+from flask_cors import CORS
 
 tiles = [[Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)], 
          [Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)]]
@@ -47,6 +48,7 @@ for row in game.tiles:
             vertex_set.add(v)
 
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def game_state():

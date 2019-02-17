@@ -50,6 +50,7 @@ for row in game.tiles:
 app = Flask(__name__)
 CORS(app)
 
+
 @app.route("/")
 def game_state():
     return jsonify(serialize_game(game))

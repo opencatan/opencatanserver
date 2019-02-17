@@ -7,9 +7,11 @@ from tile import Tile
 from player import Player
 import sys
 from catan import Catan
+from flask_cors import CORS
 
-tiles = [[Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)], 
-         [Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)]]
+tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)], 
+         [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
+         [Tile(Resource.WOOD, 3), Tile(Resource.DESERT, 0), Tile(Resource.SHEEP, 4)]]
 
 players = [Player('A'), Player('B')]
 
@@ -30,14 +32,17 @@ def tiles_to_jsonifiable(tiles):
             if _hex is None:
                 json_row.append(None)
                 continue
-            resource_type = _hex.resource_type.value
-            resource_number = _hex.resource_number
-            json_row.append((resource_type, resource_number))
+            tile_dict = {'resource_type': _hex.resource_type.value,
+            'resource_number': _hex.resource_number}
+            json_row.append(tile_dict)
         json_tiles.append(json_row)
     return json_tiles
 
-game = Catan(tiles, players)
 # vertex_set = set([v for v in [tile.vertices for tile in [row for row in game.tiles]]])
+app = Flask(__name__)
+CORS(app)
+
+game = Catan(tiles, players)
 vertex_set = set()
 for row in game.tiles:
     for tile in row:
@@ -46,10 +51,14 @@ for row in game.tiles:
         for v in tile.vertices:
             vertex_set.add(v)
 
-app = Flask(__name__)
-
+ 
 @app.route("/")
 def game_state():
+   return jsonify(serialize_game(game))
+
+@app.route("/generate/<top_width>/<middle_width>")
+def generate(top_width, middle_width):
+    game.generate(int(top_width), int(middle_width))
     return jsonify(serialize_game(game))
 
 

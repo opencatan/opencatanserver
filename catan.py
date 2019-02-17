@@ -2,7 +2,7 @@ from enum import Enum
 from graph import Vertex, Graph
 import networkx as nx
 from classes import Turn, Settlement, Resource
-from tile import Tile
+from tile import Tile, generate_board
 from player import Player
 import sys
 from robber import Robber
@@ -10,13 +10,19 @@ from robber import Robber
 class Catan:
     def __init__(self, tiles, players):
         self.tiles = tiles #2d array
+        self.tiles = generate_board(3, 5)
         self.make_graph()
 
         self.players = players #list of names
+        self.players[0].resources['ore'] = 2
+        self.players[1].resources['wheat'] = 2
         self.robber = Robber(1, 1)
         self.turn = self.players[0]
         self.phase = 0
         self.bank = {Resource.WHEAT: 20, Resource.ORE: 20, Resource.SHEEP: 20, Resource.BRICK: 20, Resource.WOOD: 20} #todo: custom bank. check these numbers
+
+    def generate(self, top_width, middle_width):
+        self.tiles = generate_board(top_width, middle_width)
 
     def make_graph(self):
         #create graph

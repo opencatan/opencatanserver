@@ -1,11 +1,56 @@
 from classes import Resource
 import sys
+from random import choice, randrange
 
-def normalize_half_index(index):
-        if int(index) == index: # we are in a normal row
-            return index
-        else:
-            return int(index+0.5) # we're in a wierd row, 0.5 -> 1st element of array, 1.5 -> 2nd element of array, etc...
+def generate_random_tiles(n):
+    possible_nums = [2,3,4,5,6,8,9,10,11]
+    possible_tiles = [
+    Resource.WHEAT,
+    Resource.ORE,
+    Resource.SHEEP,
+    Resource.BRICK, 
+    Resource.WOOD,
+    Resource.DESERT,
+    ]
+    return [Tile(choice(possible_tiles), choice(possible_nums)) for x in range(n)]
+
+def generate_board(top_width, middle_width):
+    board = []
+    board.append(generate_random_tiles(middle_width))
+
+    #will the middle row be offset?
+
+    if (top_width-middle_width) % 2 == 0:
+        middle_offset = False
+
+    else:
+        middle_offset = True
+
+    row_offset = not middle_offset
+    index_tiles_start = 0
+    for i in range(middle_width- top_width):
+        num_tiles_in_row = middle_width - 1 - i 
+        if not row_offset:
+            index_tiles_start += 1
+
+        top_row = [None] * index_tiles_start +\
+                        generate_random_tiles(num_tiles_in_row) + \
+                        [None] * index_tiles_start 
+
+        bottom_row = [None] * index_tiles_start + \
+                        generate_random_tiles(num_tiles_in_row) + \
+                        [None] * index_tiles_start 
+
+        if row_offset:
+            top_row.append(None)
+            bottom_row.append(None)
+
+        board.insert(0, top_row)
+        board.append(bottom_row)
+        row_offset = not row_offset
+    return board
+        
+
 
 class TileBoard:
     def __init__(self, board):

@@ -42,19 +42,23 @@ def tiles_to_jsonifiable(tiles):
 app = Flask(__name__)
 CORS(app)
 
+game = Catan(tiles, players)
+vertex_set = set()
+for row in game.tiles:
+    for tile in row:
+        if tile is None:
+            continue
+        for v in tile.vertices:
+            vertex_set.add(v)
 
+ 
 @app.route("/")
 def game_state():
-    game = Catan(tiles, players)
-    vertex_set = set()
-    for row in game.tiles:
-        for tile in row:
-            if tile is None:
-                continue
-            for v in tile.vertices:
-                vertex_set.add(v)
+   return jsonify(serialize_game(game))
 
-
+@app.route("/generate/<top_width>/<middle_width>")
+def generate(top_width, middle_width):
+    game.generate()
     return jsonify(serialize_game(game))
 
 

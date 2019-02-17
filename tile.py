@@ -15,7 +15,6 @@ def generate_board(top_width, middle_width):
         for i in range(middle_width):
             new_row.append(None)
         board.append(new_row)
-    print(board)
 
     for n, i in enumerate(range(top_width, middle_width+1)):
         tiles = generate_random_tiles(i)
@@ -32,7 +31,6 @@ def generate_board(top_width, middle_width):
             board[-n-1][start_pos:middle_width-start_pos] = tiles
         if n % 2:
             board[-n-1][start_pos-1:middle_width-start_pos] = tiles
-    print(board)
     return board
     
 

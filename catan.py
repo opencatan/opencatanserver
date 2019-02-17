@@ -19,6 +19,9 @@ class Catan:
         self.phase = 0
         self.bank = {Resource.WHEAT: 20, Resource.ORE: 20, Resource.SHEEP: 20, Resource.BRICK: 20, Resource.WOOD: 20} #todo: custom bank. check these numbers
 
+    def generate(self, top_width, middle_width):
+        self.tiles = generate_board(top_width, middle_width)
+
     def make_graph(self):
         vertex_set = set()
         #create vertices

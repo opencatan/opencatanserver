@@ -9,9 +9,9 @@ import sys
 from catan import Catan
 from flask_cors import CORS
 
-tiles = [[Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)], 
-         [Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
-         [Tile(Resource.DESERT, 0), Tile(Resource.SHEEP, 4)]]
+tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)], 
+         [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
+         [Tile(Resource.WOOD, 3), Tile(Resource.DESERT, 0), Tile(Resource.SHEEP, 4)]]
 
 players = [Player('A'), Player('B')]
 

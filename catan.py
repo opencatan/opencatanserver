@@ -11,7 +11,6 @@ from robber import Robber
 class Catan:
     def __init__(self, tiles, players):
         self.tiles = tiles #2d array
-        self.tiles = generate_board(1, 2)
         self.make_graph()
 
         self.players = [Player(name) for name in players]
@@ -97,16 +96,38 @@ class Catan:
                     self.graph.add_edge(vertex, v2)
                     #graph.connect(vertex, v2, 1)
 
-    def place_settlement(self, vertex, player):
-        attrs = {vertex: {'has': ['settlement', player]}}
-        nx.set_node_attributes(self.graph, attrs)
+    def place_road(self, v1, v2, player):
+        #todo: adjacency check
 
-    # This doesnt work yet. testing with test.py
+        self.graph[v1][v2]['owner'] = player
+        self.graph[v1][v2]['type'] = 'road'
+
+    def place_settlement(self, vertex, player, must_connect_to_road=True):
+        #check that there is no adjacent settlement
+        for neighbor in self.graph.neighbors(vertex):
+            if neighbor.settlement is not None:
+                return False, "You can't place a settlement adjacent to another settlement"
+
+        if must_connect_to_road:
+            connected = False
+            for _, _, edge_data in self.graph.edges(vertex, data=True):
+                if 'owner' in edge_data and edge_data['owner'] == player:
+                    connected = True
+            if not connected:
+                return False, "You must place a settlement connected to a road"
+
+        #success
+        vertex.settlement = Settlement.SETTLEMENT
+        vertex.owner = player
+        return True, None
+
     def place_city(self, vertex, player):
-        pass
-        # print ("checking... " + str(self.graph.nodes[vertex]['has']))
-        # if 'settlement' is not in self.graph.nodes[vertex]['has'] or name is not in self.graph.nodes[vertex]['has']:
-        #     print ('you done fucked up now. you cant build that!')
-        # else:
-        #     attrs = {vertex: {'has': ['city', player]}}
-        #     nx.set_node_attributes(self.graph, attrs)
+        if vertex.owner != player:
+            return False, "You must own this settlement to upgrade it to a city"
+
+        if vertex.settlement != Settlement.SETTLEMENT:
+            return False, "You must build a settlement before you can build a city"
+
+        #success
+        vertex.settlement = Settlement.CITY
+        return True, None

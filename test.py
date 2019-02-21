@@ -16,11 +16,49 @@ e = Tile('E',1)
 f = Tile('F',1)
 tiles = [[a,b],[c,d],[e,f]]
 
-catan = Catan(tiles, ["name1", "name2"])
-print (catan.graph.nodes)
-print (catan.graph.edges)
-nx.draw(catan.graph)
-plt.show()
+# nx.draw(catan.graph)
+# plt.show()
+
+def test_place_settlement_and_city(): #todo: make more "unitable" instead of a mega-test
+    catan = Catan(tiles, ["ben", "bops"])
+
+    #special placements (beginning of game)
+    success, error = catan.place_settlement(c.vertices[0], catan.players[0], must_connect_to_road=False)
+    assert(success)
+    success, error = catan.place_settlement(c.vertices[2], catan.players[1], must_connect_to_road=False)
+    assert(success)
+
+    #test adjacency
+    success, error = catan.place_settlement(c.vertices[3], catan.players[0], must_connect_to_road=False)
+    assert(not success)
+    #test adjacency
+    success, error = catan.place_settlement(c.vertices[3], catan.players[1], must_connect_to_road=False)
+    assert(not success)
+
+    #build roads for ben
+    catan.place_road(c.vertices[0], c.vertices[5], catan.players[0])
+    catan.place_road(c.vertices[4], c.vertices[5], catan.players[0])
+
+    #test road adjacency
+    success, error = catan.place_settlement(c.vertices[4], catan.players[1])
+    assert(not success)
+    #test road adjacency
+    success, error = catan.place_settlement(c.vertices[4], catan.players[0])
+    assert(success)
+
+    success, error = catan.place_city(c.vertices[4], catan.players[1])
+    assert(not success)
+    success, error = catan.place_city(c.vertices[3], catan.players[1])
+    assert(not success)
+    success, error = catan.place_city(c.vertices[4], catan.players[0])
+    assert(success)
+
+
+
+
+if __name__ == "__main__":
+    test_place_settlement_and_city()
+
 
 # print (c.vertices)
 # print (catan.graph.nodes[6])

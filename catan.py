@@ -38,6 +38,7 @@ class Catan:
                 v0 = v1 = v2 = v3 = v4 = v5 = None
 
                 # get above left tile
+                #todo: dont use raise/except
                 try:
                     x, y = i-1, j+offset
                     if x < 0 or y < 0:
@@ -77,30 +78,10 @@ class Catan:
                     v5 = left.vertices[3]
 
                 # add new vertices
-                if v0 is None:
-                    v0 = count
-                    self.graph.add_node(count, has=[])
-                    count += 1
-                if v1 is None:
-                    v1 = count
-                    self.graph.add_node(count, has=[])
-                    count += 1
-                if v2 is None:
-                    v2 = count
-                    self.graph.add_node(count, has=[])
-                    count += 1
-                if v3 is None:
-                    v3 = count
-                    self.graph.add_node(count, has=[])
-                    count += 1
-                if v4 is None:
-                    v4 = count
-                    self.graph.add_node(count, has=[])
-                    count += 1
-                if v5 is None:
-                    v5 = count
-                    self.graph.add_node(count, has=[])
-                    count += 1
+                for v in [v0, v1, v2, v3, v4, v5]:
+                    if v is None:
+                        self.graph.add_node(count)
+                        count += 1
 
                 tile.vertices = [v0, v1, v2, v3, v4, v5]
 

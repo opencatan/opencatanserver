@@ -4,16 +4,15 @@ from graph import Vertex, Graph
 import networkx as nx
 from classes import Turn, Settlement, Resource
 from tile import Tile
-from player import Player
 import sys
 from catan import Catan
 from flask_cors import CORS
 
-tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)], 
+tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)],
          [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
          [Tile(Resource.WOOD, 3), Tile(Resource.DESERT, 0), Tile(Resource.SHEEP, 4)]]
 
-players = [Player('A'), Player('B')]
+players = ['A', 'B']
 
 def serialize_game(game):
     ret_dict = {}
@@ -51,7 +50,7 @@ for row in game.tiles:
         for v in tile.vertices:
             vertex_set.add(v)
 
- 
+
 @app.route("/")
 def game_state():
    return jsonify(serialize_game(game))

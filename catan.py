@@ -4,19 +4,23 @@ import networkx as nx
 from classes import Turn, Settlement, Resource
 from tile import Tile, generate_board
 from player import Player
+from vertex import Vertex
 import sys
 from robber import Robber
 
 class Catan:
     def __init__(self, tiles, players):
         self.tiles = tiles #2d array
-        self.tiles = generate_board(3, 5)
+        self.tiles = generate_board(1, 2)
         self.make_graph()
 
-        self.players = players #list of names
+        self.players = [Player(name) for name in players]
+
+        #test values
         self.players[0].resources['ore'] = 2
         self.players[1].resources['wheat'] = 2
         self.robber = Robber(1, 1)
+
         self.turn = self.players[0]
         self.phase = 0
         self.bank = {Resource.WHEAT: 20, Resource.ORE: 20, Resource.SHEEP: 20, Resource.BRICK: 20, Resource.WOOD: 20} #todo: custom bank. check these numbers
@@ -28,7 +32,6 @@ class Catan:
         #create graph
         self.graph = nx.Graph()
 
-        count = 0
         #create vertices
         for i, row in enumerate(self.tiles):
             offset = 0 if i % 2 == 1 else -1 #odd rows are inset 1/2
@@ -80,10 +83,9 @@ class Catan:
                 # add new vertices
                 for v in [v0, v1, v2, v3, v4, v5]:
                     if v is None:
-                        self.graph.add_node(count)
-                        count += 1
-
-                tile.vertices = [v0, v1, v2, v3, v4, v5]
+                        v = Vertex()
+                        self.graph.add_node(v)
+                    tile.vertices.append(v)
 
         #connect vertices
         for row in self.tiles:

@@ -1,5 +1,5 @@
 import sys
-import matplotlib.pyplot as plt
+# import matplotlib.pyplot as plt
 import networkx as nx
 from enum import Enum
 from graph import Vertex, Graph
@@ -52,6 +52,9 @@ def test_place_settlement_and_city(): #todo: make more "unitable" instead of a m
     assert(not success)
     success, error = catan.place_city(c.vertices[4], catan.players[0])
     assert(success)
+
+    # print(catan.serialized_settlements())
+    # print(catan.serialized_roads())
 
 
 

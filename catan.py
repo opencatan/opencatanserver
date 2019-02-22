@@ -80,9 +80,10 @@ class Catan:
                     v5 = left.vertices[3]
 
                 # add new vertices
-                for v in [v0, v1, v2, v3, v4, v5]:
+                for k, v in enumerate([v0, v1, v2, v3, v4, v5]):
                     if v is None:
                         v = Vertex()
+                        v.location = (i, j, k)
                         self.graph.add_node(v)
                     tile.vertices.append(v)
 
@@ -131,3 +132,14 @@ class Catan:
         #success
         vertex.settlement = Settlement.CITY
         return True, None
+
+
+    def serialized_settlements(self):
+        return [vertex.serialize() for vertex in self.graph.nodes if vertex is not None and vertex.settlement is not None]
+
+    def serialized_roads(self):
+        #get all edges
+        edges = [(v1, v2, data) for v1, v2, data in self.graph.edges(data=True) if data]
+        #get locations out of vertices and name out of owner
+        edges = [(v1.location, v2.location, {key: value.name if key == 'owner' else value for key, value in data.items()}) for v1, v2, data in edges]
+        return edges

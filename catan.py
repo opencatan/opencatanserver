@@ -97,11 +97,23 @@ class Catan:
                     self.graph.add_edge(vertex, v2)
                     #graph.connect(vertex, v2, 1)
 
+#  **************** Accessor methods ****************
+
+    def player_with_name(self, name):
+        try:
+            return [player for player in self.players if player.name == name][0]
+        except IndexError:
+            return None
+
+#  **************** Placement methods ****************
+
     def place_road(self, v1, v2, player):
-        #todo: adjacency check
+        #todo: adjacency check and other error handling
 
         self.graph[v1][v2]['owner'] = player
         self.graph[v1][v2]['type'] = 'road'
+
+        return True, None
 
     def place_settlement(self, vertex, player, must_connect_to_road=True):
         #check that there is no adjacent settlement

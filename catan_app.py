@@ -62,6 +62,36 @@ def generate(top_width, middle_width):
     game.generate(int(top_width), int(middle_width))
     return jsonify(serialize_game(game))
 
+#todo: error handling
+@app.route("/place/<object>/<player>/<i>/<j>/<k>")
+def place(object, player, i, j, k):
+    i = int(i)
+    j = int(j)
+    k = int(k)
+    player = game.player_with_name(player)
+    if player is None:
+        #todo handle error
+        return "player is none"
+
+    vertex = game.tiles[i][j].vertices[k]
+    if vertex is None:
+        #todo handle error
+        return "vertex is none"
+
+    if object == "settlement":
+        #todo error handling
+        success, error = game.place_settlement(vertex, player, must_connect_to_road=False)
+    elif object == "city":
+        success, error = game.place_city(vertex, player)
+    elif object == "road":
+        vertex2 = game.tiles[i][j].vertices[(k+1) % 6]
+        success, error = game.place_road(vertex, vertex2, player)
+    else:
+        success, error = False, "No object specified"
+
+    #todo: error handling lol
+    return error if error is not None else ""
+
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)

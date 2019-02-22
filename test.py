@@ -55,6 +55,7 @@ def test_place_settlement_and_city(): #todo: make more "unitable" instead of a m
 
     # print(catan.serialized_settlements())
     # print(catan.serialized_roads())
+    # print(catan.player_with_name('ben'))
 
 
 

@@ -3,14 +3,14 @@ from enum import Enum
 from graph import Vertex, Graph
 import networkx as nx
 from classes import Turn, Settlement, Resource
-from tile import Tile
+from tile import Tile, generate_board
 import sys
 from catan import Catan
 from flask_cors import CORS
 
-tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)],
-         [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
-         [Tile(Resource.WOOD, 3), Tile(Resource.DESERT, 0), Tile(Resource.SHEEP, 4)]]
+# tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)],
+#          [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
+#          [Tile(Resource.WOOD, 3), Tile(Resource.DESERT, 0), Tile(Resource.SHEEP, 4)]]
 
 players = ['A', 'B']
 
@@ -39,18 +39,10 @@ def tiles_to_jsonifiable(tiles):
         json_tiles.append(json_row)
     return json_tiles
 
-# vertex_set = set([v for v in [tile.vertices for tile in [row for row in game.tiles]]])
 app = Flask(__name__)
 CORS(app)
 
-game = Catan(tiles, players)
-vertex_set = set()
-for row in game.tiles:
-    for tile in row:
-        if tile is None:
-            continue
-        for v in tile.vertices:
-            vertex_set.add(v)
+game = Catan(generate_board(3, 5), players)
 
 
 @app.route("/")
@@ -59,7 +51,8 @@ def game_state():
 
 @app.route("/generate/<top_width>/<middle_width>")
 def generate(top_width, middle_width):
-    game.generate(int(top_width), int(middle_width))
+    global game
+    game = Catan(generate_board(int(top_width), int(middle_width)), players)
     return jsonify(serialize_game(game))
 
 #todo: error handling

@@ -150,8 +150,12 @@ class Catan:
         return [vertex.serialize() for vertex in self.graph.nodes if vertex is not None and vertex.settlement is not None]
 
     def serialized_roads(self):
-        #get all edges
-        edges = [(v1, v2, data) for v1, v2, data in self.graph.edges(data=True) if data]
-        #get locations out of vertices and name out of owner
-        edges = [(v1.location, v2.location, {key: value.name if key == 'owner' else value for key, value in data.items()}) for v1, v2, data in edges]
+        edges = []
+        for (v1, v2, data) in self.graph.edges(data=True):
+            if data:
+                edge = {"v1": v1.location,
+                        "v2": v2.location,
+                        "owner": data["owner"].name,
+                        "type": data["type"]}
+                edges.append(edge)
         return edges

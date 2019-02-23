@@ -116,6 +116,9 @@ class Catan:
         return True, None
 
     def place_settlement(self, vertex, player, must_connect_to_road=True):
+        if vertex.owner:
+            return False, "There's already a settlement there!"
+
         #check that there is no adjacent settlement
         for neighbor in self.graph.neighbors(vertex):
             if neighbor.settlement is not None:

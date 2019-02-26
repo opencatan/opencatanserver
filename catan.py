@@ -107,9 +107,28 @@ class Catan:
 
 #  **************** Placement methods ****************
 
+    #TODO: TEST
     def place_road(self, v1, v2, player):
-        #todo: adjacency check and other error handling
+        if 'owner' in self.graph[v1][v2]:
+            return False, "There's already a road there!"
 
+        can_place = False
+
+        #find adjacent settlement
+        if v1.owner == player or v2.owner == player:
+            can_place = True
+
+        #find adjacent road
+        if not can_place:
+            for _, _, edge_data in self.graph.edges([v1, v2], data=True):
+                if 'owner' in edge_data and edge_data['owner'] == player:
+                    can_place = True
+                    break
+
+        if not can_place:
+            return False, "You must have an adjacent settlement or road"
+
+        #success
         self.graph[v1][v2]['owner'] = player
         self.graph[v1][v2]['type'] = 'road'
 
@@ -148,6 +167,15 @@ class Catan:
         vertex.settlement = Settlement.CITY
         return True, None
 
+#  **************** Turn methods ****************
+
+    def roll_dice(self):
+        pass
+
+    def end_turn(self):
+        pass
+
+#  **************** Serialization methods ****************
 
     def serialized_settlements(self):
         return [vertex.serialize() for vertex in self.graph.nodes if vertex is not None and vertex.settlement is not None]

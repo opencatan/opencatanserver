@@ -203,6 +203,9 @@ class Catan:
                         amount = 1 if vertex.settlement == Settlement.SETTLEMENT else 2 if vertex.settlement == Settlement.CITY else 0
                         vertex.owner.resources[tile.resource_type] += amount
 
+        #TODO: TRADING PHASE
+        self.phase = Turn.BUILD
+
 
     def end_turn(self):
         index = self.players.find(self.turn)

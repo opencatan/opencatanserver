@@ -1,4 +1,4 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from enum import Enum
 from graph import Vertex, Graph
 import networkx as nx
@@ -85,6 +85,13 @@ def place(object, player, i, j, k):
     #todo: error handling lol
     return error if error is not None else ""
 
+@app.route("/end_turn")
+def end_turn():
+    game.end_turn()
+
+@app.route("/roll_dice")
+def roll_dice():
+    game.roll_dice()
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)

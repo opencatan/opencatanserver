@@ -92,7 +92,7 @@ def end_turn():
 
 @app.route("/roll_dice")
 def roll_dice():
-    roll = game.roll_dice()
+    roll, error = game.roll_dice()
     return str(roll)
 
 if __name__ == '__main__':

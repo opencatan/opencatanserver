@@ -207,7 +207,7 @@ class Catan:
 
         #TODO: TRADING PHASE
         self.phase = Turn.BUILD
-        return roll
+        return roll, ''
 
 
     def end_turn(self):

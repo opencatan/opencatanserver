@@ -20,7 +20,7 @@ def serialize_game(game):
     ret_dict['board'] = tiles_to_jsonifiable(game.tiles)
     ret_dict['robber'] = game.robber.serialize()
     ret_dict['turn'] = { 'player': game.turn.name,
-                         'phase': game.phase}
+                         'phase': game.phase.value}
     ret_dict['settlements'] = game.serialized_settlements()
     ret_dict['roads'] = game.serialized_roads()
     return ret_dict
@@ -88,10 +88,12 @@ def place(object, player, i, j, k):
 @app.route("/end_turn")
 def end_turn():
     game.end_turn()
+    return ""
 
 @app.route("/roll_dice")
 def roll_dice():
-    game.roll_dice()
+    roll = game.roll_dice()
+    return str(roll)
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)

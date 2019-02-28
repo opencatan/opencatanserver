@@ -17,12 +17,12 @@ class Catan:
         self.players = [Player(name) for name in players]
 
         #test values
-        self.players[0].resources['ore'] = 2
-        self.players[1].resources['wheat'] = 2
+        self.players[0].resources[Resource.ORE] = 2
+        self.players[1].resources[Resource.WHEAT] = 2
         self.robber = Robber(1, 1)
 
         self.turn = self.players[0]
-        self.phase = 0
+        self.phase = Turn.ROLLDICE
         self.bank = {Resource.WHEAT: 20, Resource.ORE: 20, Resource.SHEEP: 20, Resource.BRICK: 20, Resource.WOOD: 20} #todo: custom bank. check these numbers
 
     def generate(self, top_width, middle_width):
@@ -111,7 +111,7 @@ class Catan:
     def can_place(self, player):
         if self.turn != player:
             return False, "It's not your turn!"
-        if self.phase.value != Turn.BUILD:
+        if self.phase != Turn.BUILD:
             return False, "You're not in the build phase!"
 
         return True, ''
@@ -205,13 +205,14 @@ class Catan:
 
         #TODO: TRADING PHASE
         self.phase = Turn.BUILD
+        return roll
 
 
     def end_turn(self):
-        index = self.players.find(self.turn)
+        index = self.players.index(self.turn)
         index = (index + 1) % len(self.players)
         self.turn = self.players[index]
-        self.phase = 0
+        self.phase = Turn.ROLLDICE
 
 #  **************** Serialization methods ****************
 

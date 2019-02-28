@@ -2,11 +2,10 @@ from enum import Enum
 import sys
 
 class Turn(Enum):
-    SP_PLACEMENT = 0
-    ROLLDICE = 1
-    TRADE = 2
-    BUILD = 3
-    SP_BUILD = 4
+    ROLLDICE = 0
+    TRADE = 1
+    BUILD = 2
+    SP_BUILD = 3
 
 class Settlement(Enum):
     SETTLEMENT = 1

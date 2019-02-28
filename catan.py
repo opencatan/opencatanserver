@@ -6,6 +6,7 @@ from tile import Tile, generate_board
 from player import Player
 from vertex import Vertex
 import sys
+import random
 from robber import Robber
 
 class Catan:
@@ -107,8 +108,20 @@ class Catan:
 
 #  **************** Placement methods ****************
 
+    def can_place(self, player):
+        if self.turn != player:
+            return False, "It's not your turn!"
+        if self.phase.value != Turn.BUILD:
+            return False, "You're not in the build phase!"
+
+        return True, ''
+
     #TODO: TEST
     def place_road(self, v1, v2, player):
+        success, error = self.can_place(player)
+        if not success:
+            return False, error
+
         if 'owner' in self.graph[v1][v2]:
             return False, "There's already a road there!"
 
@@ -135,6 +148,10 @@ class Catan:
         return True, None
 
     def place_settlement(self, vertex, player, must_connect_to_road=True):
+        success, error = self.can_place(player)
+        if not success:
+            return False, error
+
         if vertex.owner:
             return False, "There's already a settlement there!"
 
@@ -157,6 +174,10 @@ class Catan:
         return True, None
 
     def place_city(self, vertex, player):
+        success, error = self.can_place(player)
+        if not success:
+            return False, error
+
         if vertex.owner != player:
             return False, "You must own this settlement to upgrade it to a city"
 
@@ -169,11 +190,25 @@ class Catan:
 
 #  **************** Turn methods ****************
 
+    #TODO: test
     def roll_dice(self):
-        pass
+        roll = random.randint(1, 6) + random.randint(1, 6)
+        #todo: robber
+        for row in self.tiles:
+            for tile in row:
+                if tile is None or tile.resource_number != roll:
+                    continue
+                for vertex in tile.vertices:
+                    if vertex.owner:
+                        amount = 1 if vertex.settlement == Settlement.SETTLEMENT else 2 if vertex.settlement == Settlement.CITY else 0
+                        vertex.owner.resources[tile.resource_type] += amount
+
 
     def end_turn(self):
-        pass
+        index = self.players.find(self.turn)
+        index = (index + 1) % len(self.players)
+        self.turn = self.players[index]
+        self.phase = 0
 
 #  **************** Serialization methods ****************
 

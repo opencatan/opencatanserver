@@ -88,7 +88,7 @@ def place(object, i, j, k):
 
     if object == "settlement":
         #todo error handling
-        success, error = game.place_settlement(vertex, player, must_connect_to_road=False)
+        success, error = game.place_settlement(vertex, player)
     elif object == "city":
         success, error = game.place_city(vertex, player)
     elif object == "road":

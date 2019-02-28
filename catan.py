@@ -17,13 +17,19 @@ class Catan:
         self.players = [Player(name) for name in players]
 
         #test values
-        self.players[0].resources[Resource.ORE] = 2
-        self.players[1].resources[Resource.WHEAT] = 2
+        #todo: actual game setup
+        for player in self.players:
+            for resource in Resource:
+                player.resources[resource] = 3
         self.robber = Robber(1, 1)
 
         self.turn = self.players[0]
         self.phase = Turn.ROLLDICE
+        self.turn_number = 0
         self.bank = {Resource.WHEAT: 20, Resource.ORE: 20, Resource.SHEEP: 20, Resource.BRICK: 20, Resource.WOOD: 20} #todo: custom bank. check these numbers
+        self.building_costs = {Settlement.SETTLEMENT: {Resource.WHEAT: 1, Resource.SHEEP: 1, Resource.BRICK: 1, Resource.WOOD: 1},
+                               Settlement.CITY: {Resource.ORE: 3, Resource.WHEAT: 2},
+                               'road': {Resource.WOOD: 1, Resource.BRICK: 1}}
 
     def generate(self, top_width, middle_width):
         self.tiles = generate_board(top_width, middle_width)
@@ -116,9 +122,27 @@ class Catan:
 
         return True, ''
 
+    def can_build(self, player, building):
+        cost = self.building_costs[building]
+        for resource, amount in cost.items():
+            if player.resources[resource] < amount:
+                return False, "Not enough resources"
+
+        return True, ''
+
+    def charge_building_costs(self, player, building):
+        #TODO: BANK
+        cost = self.building_costs[building]
+        for resource, amount in cost.items():
+            player.resources[resource] -= amount
+
     #TODO: TEST
     def place_road(self, v1, v2, player):
         success, error = self.can_place(player)
+        if not success:
+            return False, error
+
+        success, error = self.can_build(player, 'road')
         if not success:
             return False, error
 
@@ -144,11 +168,20 @@ class Catan:
         #success
         self.graph[v1][v2]['owner'] = player
         self.graph[v1][v2]['type'] = 'road'
+        self.charge_building_costs(player, 'road')
 
         return True, None
 
     def place_settlement(self, vertex, player, must_connect_to_road=True):
+        #todo: actual game setup
+        if self.turn_number < 2:
+            must_connect_to_road = False
+
         success, error = self.can_place(player)
+        if not success:
+            return False, error
+
+        success, error = self.can_build(player, Settlement.SETTLEMENT)
         if not success:
             return False, error
 
@@ -171,10 +204,16 @@ class Catan:
         #success
         vertex.settlement = Settlement.SETTLEMENT
         vertex.owner = player
+        self.charge_building_costs(player, Settlement.SETTLEMENT)
+
         return True, None
 
     def place_city(self, vertex, player):
         success, error = self.can_place(player)
+        if not success:
+            return False, error
+
+        success, error = self.can_build(player, Settlement.CITY)
         if not success:
             return False, error
 
@@ -186,6 +225,8 @@ class Catan:
 
         #success
         vertex.settlement = Settlement.CITY
+        self.charge_building_costs(player, Settlement.CITY)
+
         return True, None
 
 #  **************** Turn methods ****************
@@ -211,6 +252,9 @@ class Catan:
 
 
     def end_turn(self):
+        if self.turn == self.players[-1]:
+            self.turn_number += 1
+
         index = self.players.index(self.turn)
         index = (index + 1) % len(self.players)
         self.turn = self.players[index]

@@ -56,8 +56,9 @@ def generate(top_width, middle_width):
     return jsonify(serialize_game(game))
 
 #todo: error handling
-@app.route("/place/<object>/<player>/<i>/<j>/<k>")
-def place(object, player, i, j, k):
+@app.route("/place/<object>/<i>/<j>/<k>")
+def place(object, i, j, k):
+    player = request.args['player']
     i = int(i)
     j = int(j)
     k = int(k)

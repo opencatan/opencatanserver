@@ -216,6 +216,10 @@ class Catan:
         self.turn = self.players[index]
         self.phase = Turn.ROLLDICE
 
+    def is_player_turn(self, player_name):
+        player = self.player_with_name(player_name)
+        return self.turn == player
+
 #  **************** Serialization methods ****************
 
     def serialized_settlements(self):

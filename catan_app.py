@@ -7,6 +7,7 @@ from tile import Tile, generate_board
 import sys
 from catan import Catan
 from flask_cors import CORS
+from functools import wraps
 
 # tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)],
 #          [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
@@ -45,6 +46,18 @@ CORS(app)
 game = Catan(generate_board(3, 5), players)
 
 
+def validate_player(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        player = None
+        if 'player' in request.args and game.is_player_turn(request.args['player']):
+            return f(*args, **kwargs)
+        else:
+            return "It's not your turn!"
+
+    return wrap
+
+
 @app.route("/")
 def game_state():
    return jsonify(serialize_game(game))
@@ -57,6 +70,7 @@ def generate(top_width, middle_width):
 
 #todo: error handling
 @app.route("/place/<object>/<i>/<j>/<k>")
+@validate_player
 def place(object, i, j, k):
     player = request.args['player']
     i = int(i)
@@ -87,11 +101,13 @@ def place(object, i, j, k):
     return error if error is not None else ""
 
 @app.route("/end_turn")
+@validate_player
 def end_turn():
     game.end_turn()
     return ""
 
 @app.route("/roll_dice")
+@validate_player
 def roll_dice():
     roll, error = game.roll_dice()
     return str(roll)

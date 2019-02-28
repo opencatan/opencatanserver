@@ -20,7 +20,8 @@ class Catan:
         #todo: actual game setup
         for player in self.players:
             for resource in Resource:
-                player.resources[resource] = 3
+                    if resource not in Resource.excepted_resources():
+                        player.resources[resource] = 3
         self.robber = Robber(1, 1)
 
         self.turn = self.players[0]
@@ -239,7 +240,8 @@ class Catan:
         #todo: robber
         for row in self.tiles:
             for tile in row:
-                if tile is None or tile.resource_number != roll:
+                #we shouldn't have numbers on our excepted_resources, but just in case...
+                if tile is None or tile.resource_number != roll or tile.resource_type in Resource.excepted_resources():
                     continue
                 for vertex in tile.vertices:
                     if vertex.owner:

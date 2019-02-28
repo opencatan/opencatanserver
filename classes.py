@@ -19,3 +19,6 @@ class Resource(Enum):
     WOOD = "wood"
     DESERT = "desert"
     WATER = "water"
+
+    def excepted_resources():
+        return [Resource.DESERT, Resource.WATER]

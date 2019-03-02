@@ -59,7 +59,7 @@ def find_game(id):
         game_data = mongo.db.games.find_one({"id": id})['data']
         game = pickle.loads(game_data)
         return game
-    except KeyError:
+    except:
         return None
 
 def store_game(id, game):

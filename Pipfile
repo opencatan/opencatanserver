@@ -11,6 +11,7 @@ matplotlib = "*"
 flask-cors = "*"
 ipython = "*"
 pylint = "*"
+Flask-PyMongo = "*"
 
 [dev-packages]
 pylint = "*"

@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, request
+from flask_pymongo import PyMongo
 from enum import Enum
 from graph import Vertex, Graph
 import networkx as nx
@@ -8,6 +9,7 @@ import sys
 from catan import Catan
 from flask_cors import CORS
 from functools import wraps
+import os
 
 # tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)],
 #          [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
@@ -42,6 +44,12 @@ def tiles_to_jsonifiable(tiles):
 
 app = Flask(__name__)
 CORS(app)
+
+try:
+    app.config["MONGO_URI"] = os.environ["MONGODB_URI"]
+except KeyError:
+    app.config["MONGO_URI"] = "mongodb://localhost:27017/catan"
+mongo = PyMongo(app)
 
 game = Catan(generate_board(3, 5), players)
 
@@ -111,6 +119,14 @@ def end_turn():
 def roll_dice():
     roll, error = game.roll_dice()
     return str(roll)
+
+@app.route("/test")
+def test():
+    games = mongo.db.games
+    data = {"foo": "bar"}
+    id = games.insert_one(data).inserted_id
+    print("id", id)
+    return "hi"
 
 if __name__ == '__main__':
     app.run(debug=True, use_reloader=True)

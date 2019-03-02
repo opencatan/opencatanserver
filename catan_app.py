@@ -10,12 +10,22 @@ from catan import Catan
 from flask_cors import CORS
 from functools import wraps
 import os
-
-# tiles = [[Tile(Resource.WOOD, 3), Tile(Resource.ORE, 1),    Tile(Resource.WHEAT, 2)],
-#          [None, Tile(Resource.WOOD, 3), Tile(Resource.BRICK, 4)],
-#          [Tile(Resource.WOOD, 3), Tile(Resource.DESERT, 0), Tile(Resource.SHEEP, 4)]]
+import pickle
+from bson.binary import Binary
 
 players = ['A', 'B']
+app = Flask(__name__)
+CORS(app)
+
+try:
+    app.config["MONGO_URI"] = os.environ["MONGODB_URI"]
+except KeyError:
+    app.config["MONGO_URI"] = "mongodb://localhost:27017/catan"
+mongo = PyMongo(app)
+
+game_id = 1
+
+### client <-> server serialization ###
 
 def serialize_game(game):
     ret_dict = {}
@@ -42,44 +52,76 @@ def tiles_to_jsonifiable(tiles):
         json_tiles.append(json_row)
     return json_tiles
 
-app = Flask(__name__)
-CORS(app)
+### server <-> database access
 
-try:
-    app.config["MONGO_URI"] = os.environ["MONGODB_URI"]
-except KeyError:
-    app.config["MONGO_URI"] = "mongodb://localhost:27017/catan"
-mongo = PyMongo(app)
+def find_game(id):
+    try:
+        game_data = mongo.db.games.find_one({"id": id})['data']
+        game = pickle.loads(game_data)
+        return game
+    except KeyError:
+        return None
 
-game = Catan(generate_board(3, 5), players)
+def store_game(id, game):
+    #todo: don't use pickle
+    game_data = Binary(pickle.dumps(game))
+    d = {"id": id,
+         "data": game_data}
+    mongo.db.games.replace_one({"id": id}, d, upsert=True)
 
+### view decorators ###
+
+def read_game(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        game = find_game(game_id)
+        kwargs['game'] = game
+        return f(*args, **kwargs)
+    return wrap
+
+def read_write_game(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        game = find_game(game_id)
+        kwargs['game'] = game
+        ret_val = f(*args, **kwargs)
+        store_game(game_id, game)
+        return ret_val
+    return wrap
 
 def validate_player(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         player = None
-        if 'player' in request.args and game.is_player_turn(request.args['player']):
+        print(kwargs['game'])
+        print(request.args['player'])
+        if 'player' in request.args and kwargs['game'].is_player_turn(request.args['player']):
             return f(*args, **kwargs)
         else:
             return "It's not your turn!"
-
     return wrap
 
+### views ###
 
 @app.route("/")
-def game_state():
-   return jsonify(serialize_game(game))
+@read_game
+def game_state(game=None):
+    if game is not None:
+       return jsonify(serialize_game(game))
+    else:
+       return "no game"
 
 @app.route("/generate/<top_width>/<middle_width>")
 def generate(top_width, middle_width):
-    global game
     game = Catan(generate_board(int(top_width), int(middle_width)), players)
+    store_game(game_id, game)
     return jsonify(serialize_game(game))
 
 #todo: error handling
 @app.route("/place/<object>/<i>/<j>/<k>")
+@read_write_game
 @validate_player
-def place(object, i, j, k):
+def place(object, i, j, k, game=None):
     player = request.args['player']
     i = int(i)
     j = int(j)
@@ -109,14 +151,16 @@ def place(object, i, j, k):
     return error if error is not None else ""
 
 @app.route("/end_turn")
+@read_write_game
 @validate_player
-def end_turn():
+def end_turn(game=None):
     game.end_turn()
     return ""
 
 @app.route("/roll_dice")
+@read_write_game
 @validate_player
-def roll_dice():
+def roll_dice(game=None):
     roll, error = game.roll_dice()
     return str(roll)
 

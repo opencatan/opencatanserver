@@ -233,7 +233,7 @@ class Catan:
 #  **************** Turn methods ****************
 
     #TODO: test
-    #TODO: don't give desert / water resources
+    #todo: validate player is in roll phase
     #TODO: subtract from bank (and check if we have enough)
     def roll_dice(self):
         roll = random.randint(1, 6) + random.randint(1, 6)

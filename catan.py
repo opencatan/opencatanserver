@@ -8,6 +8,8 @@ from vertex import Vertex
 import sys
 import random
 from robber import Robber
+from collections import defaultdict
+
 
 class Catan:
     def __init__(self, tiles, players):
@@ -112,6 +114,17 @@ class Catan:
             return [player for player in self.players if player.name == name][0]
         except IndexError:
             return None
+
+    def victory_points(self):
+        #todo: longest road
+        #todo: largest army
+        #todo: dev cards
+        victory_points = defaultdict(int)
+        for vertex in self.graph.nodes:
+            if vertex is not None and vertex.settlement is not None:
+                victory_points[vertex.owner.name] += vertex.settlement.value
+        return victory_points
+
 
 #  **************** Placement methods ****************
 

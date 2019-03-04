@@ -36,6 +36,7 @@ def serialize_game(game):
                          'phase': game.phase.value}
     ret_dict['settlements'] = game.serialized_settlements()
     ret_dict['roads'] = game.serialized_roads()
+    ret_dict['victory_points'] = game.victory_points()
     return ret_dict
 
 def tiles_to_jsonifiable(tiles):

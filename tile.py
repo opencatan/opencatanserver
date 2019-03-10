@@ -49,7 +49,6 @@ def generate_board(top_width, middle_width):
         board.append(bottom_row)
         row_offset = not row_offset
     return board
-        
 
 
 class TileBoard:

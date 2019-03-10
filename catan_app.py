@@ -37,6 +37,7 @@ def serialize_game(game):
     ret_dict['settlements'] = game.serialized_settlements()
     ret_dict['roads'] = game.serialized_roads()
     ret_dict['victory_points'] = game.victory_points()
+    ret_dict['offers'] = game.serialize_offers()
     return ret_dict
 
 def tiles_to_jsonifiable(tiles):
@@ -150,6 +151,32 @@ def place(object, i, j, k, game=None):
 
     #todo: error handling lol
     return error if error is not None else ""
+
+
+#todo: error handling
+@app.route("/offer/make")
+@read_write_game
+@validate_player
+def make_offer(game=None):
+    player_maker = game.player_with_name(request.args['player_maker'])
+    resources_from = request.args['resources_from']
+    resources_to = request.args['resources_to']
+    success, error = game.create_offer(player_maker, resources_from, resources_to)
+    #todo: error handling lol
+    return error if error is not None else ""
+
+
+#todo: error handling
+@app.route("/offer/take")
+@read_write_game
+@validate_player
+def take_offer(game=None):
+    player_taker = game.player_with_name(request.args['player_taker'])
+    offer_id = request.args['offer_id']
+    success, error = game.take_offer(player_taker, offer_id)
+    #todo: error handling lol
+    return error if error is not None else ""
+
 
 @app.route("/end_turn")
 @read_write_game

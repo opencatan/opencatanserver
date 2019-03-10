@@ -1,4 +1,5 @@
 from enum import Enum
+import uuid
 from graph import Vertex, Graph
 import networkx as nx
 from classes import Turn, Settlement, Resource
@@ -9,6 +10,7 @@ import sys
 import random
 from robber import Robber
 from collections import defaultdict
+from offer import Offer
 
 
 class Catan:
@@ -27,6 +29,8 @@ class Catan:
         self.robber = Robber(1, 1)
 
         self.turn = self.players[0]
+        self.trades = []
+        self.offers = {}
         self.phase = Turn.ROLLDICE
         self.turn_number = 0
         self.bank = {Resource.WHEAT: 20, Resource.ORE: 20, Resource.SHEEP: 20, Resource.BRICK: 20, Resource.WOOD: 20} #todo: custom bank. check these numbers
@@ -125,6 +129,37 @@ class Catan:
                 victory_points[vertex.owner.name] += vertex.settlement.value
         return victory_points
 
+#  **************** Trading methods ****************
+
+    def make_offer(self, player_maker, resources_from, resources_to):
+        
+        #offers are created as {RESOURCE: number_of_cards, .....}
+
+        offer_id = str(uuid.uuid4())
+        for r, n in resources_from.items():
+            if player_maker.resources[r] < n:
+                return False, "You do not have enough resources to create this trade!"
+        self.offers[offer_id] = Offer(player_maker, resources_from, resources_to)
+        return True, ''
+
+    def take_offer(self, player_taker, offer_id):
+        offer = self.offers[offer_id]
+        if self.turn not in [player_taker, offer.player_maker]:
+            return False, "It has to be one of the trading players' turn!"
+
+        for r, n in offer.resources_to.items():
+            if player_taker.resources[r] < n:
+                return False, "You do not have enough resources to accept this trade!"
+        for r, n in offer.resources_from.items():
+            offer.player_maker.resources[r] -= n
+            player_taker.resources[r] += n
+
+        for r, n in offer.resources_to.items():
+            player_taker.resources[r] -= n
+            offer.player_maker.resources[r] +=n
+        
+        del(self.offers[offer_id])
+        return True, ''
 
 #  **************** Placement methods ****************
 
@@ -140,7 +175,7 @@ class Catan:
         cost = self.building_costs[building]
         for resource, amount in cost.items():
             if player.resources[resource] < amount:
-                return False, "Not enough resources"
+                return False, "Not enough resources!"
 
         return True, ''
 
@@ -269,7 +304,7 @@ class Catan:
     def end_turn(self):
         if self.turn == self.players[-1]:
             self.turn_number += 1
-
+        self.offers = {}
         index = self.players.index(self.turn)
         index = (index + 1) % len(self.players)
         self.turn = self.players[index]
@@ -294,3 +329,16 @@ class Catan:
                         "type": data["type"]}
                 edges.append(edge)
         return edges
+
+    def serialized_offers(self):
+        offers = {}
+        for o in self.offers:
+            resources_to_dict = {}
+            resources_from_dict = {}
+            for r, n in o.resources_to.enumerate():
+                resources_to_dict[r.value] = n
+            for r, n in o.resources_from.enumerate():
+                resources_from_dict[r.value] = n
+            offers[o.id] = {"player_taker": o.player_taker.name,
+                            "resources_from": resources_from_dict,
+                            "resources_to": resources_to_dict}

@@ -52,6 +52,22 @@ def test_place_settlement_and_city(): #todo: make more "unitable" instead of a m
     assert(not success)
     success, error = catan.place_city(c.vertices[4], catan.players[0])
     assert(success)
+    
+    
+    
+    
+def test_trading():
+    catan = Catan(tiles, ["ben", "bops"])
+    print(catan.players)
+    success, error = catan.make_offer(catan.players[0], {Resource.WHEAT:1}, {Resource.BRICK:1})
+    assert(success)
+    offer_id = list(catan.offers)[0]
+    success, error = catan.take_offer(catan.players[1], offer_id)
+    assert(success)
+
+    print(catan.players[1].resources)
+    print(catan.players[0].resources)
+
 
     # print(catan.serialized_settlements())
     # print(catan.serialized_roads())
@@ -61,7 +77,8 @@ def test_place_settlement_and_city(): #todo: make more "unitable" instead of a m
 
 
 if __name__ == "__main__":
-    test_place_settlement_and_city()
+    test_trading()
+    #test_place_settlement_and_city()
 
 
 # print (c.vertices)
